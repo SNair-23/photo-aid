@@ -94,10 +94,7 @@ def read_as_csv(input_file, output_file):
   display(csv_data.head())
   return csv_data
 
-#loop through annotations' file and foldernames--- then loop through image paths.
-#If they match, add the image to loaded_images
 
-"""I will likely have to separate the training and the testing images from each other based on the annotations I have! Also--- keep in mind that the photos are within folders and that the filenames map to the folder and the filename (for future tracing)"""
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Input, Dense, Flatten,Dropout
@@ -140,9 +137,7 @@ def load_images(csv_data, image_dir="/content/WFLW_images/WFLW_images"):
 
 def make_NN(attribute):
     tf.keras.optimizers.Adam(learning_rate=0.0001)
-    # Filter csv_data to include only rows for which images were successfully loaded
-    # Assuming loaded_images were added in the same order as csv_data was iterated
-    # A more robust approach would involve matching file names
+
     valid_indices = [i for i, img in enumerate(loaded_images) if img is not None]
     filtered_csv_data = csv_data.iloc[valid_indices].reset_index(drop=True)
 
