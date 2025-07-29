@@ -10,11 +10,21 @@ Complete information on the WFLW dataset can be found at https://wywu.github.io/
 
 
 PROCEDURE:
-1. Download the WFLW_training_annotations.csv file
+1. Download the WFLW Face Annotations
 ~~~
-wget -P ./Downloads "https://github.com/SNair-23/photo-aid/blob/main/WFLW_training_annotations.csv"
+wget -P ./Downloads/ "https://wywu.github.io/projects/LAB/support/WFLW_annotations.tar.gz"
 ~~~
-3. Download WFLW training images WFLW Training and Testing Images from https://drive.google.com/file/d/1hzBd48JIdWTJSsATBEB_eFVvPL1bx6UC/view  --- for Google Colab, save WFLW_images.tar.gz to Google Drive, otherwise store locally or on chosen virtual environment
+2. Unzip them into 'Downloads/WFLW_Files/datasets/'
+~~~
+mkdir ./Downloads/WFLW
+tar -xvzf WFLW_annotations.tar.gz | ./Downloads/WFLW_Files/datasets
+~~~
+3. Download and Use annotations_parser.py to create a csv
+~~~
+cd ~
+
+~~~
+5. Download WFLW training images WFLW Training and Testing Images from https://drive.google.com/file/d/1hzBd48JIdWTJSsATBEB_eFVvPL1bx6UC/view  --- for Google Colab, save WFLW_images.tar.gz to Google Drive, otherwise store locally or on chosen virtual environment
 
 COLAB:
 - Training code at https://colab.research.google.com/drive/1r_dXCJkMsFt6vrwoZXCks5hQXr6LpyDq
