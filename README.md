@@ -18,11 +18,13 @@ wget -P ./Downloads/ "https://wywu.github.io/projects/LAB/support/WFLW_annotatio
 2. Unzip them into 'Downloads/WFLW_files/datasets/'
 ~~~
 mkdir ./Downloads/WFLW_files/datasets/WFLW
-tar -xvzf WFLW_annotations.tar.gz | ./Downloads/WFLW_Files/datasets/WFLW
+mv ./Downloads/WFLW_annotations.tar.gz ./Downloads/WFLW_Files/datasets/WFLW
+cd ./Downloads/WFLW_Files/datasets/WFLW
+tar -xvzf WFLW_annotations.tar.gz
 ~~~
 3. Download and run annotations_parser.py, and type "R" for training. 
 ~~~
-wget -P ./Downloads/ "https://wywu.github.io/projects/LAB/support/annotations_parser.py"
+wget -P . "https://github.com/SNair-23/photo-aid/blob/main/annotations_parser.py""
 python3 annotations_parser.py
 ~~~
 Training data should now be stored in a csv at the specified file path in the output of annotations_parser.py
