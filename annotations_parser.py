@@ -19,7 +19,7 @@ def parseAnnotationLine(data_row):
     data_dictionary["blur"] = tokens[-2]
     data_dictionary["occlusion"] = tokens[-3]
     data_dictionary["make_up"] = tokens[-4]
-    data_dictionary["illumination"] = tokens[-]5
+    data_dictionary["illumination"] = tokens[-5]
     data_dictionary["expression"] = tokens[-6]
     data_dictionary["pose"] = tokens[-7]
     data_dictionary["y_max"] = tokens[-8]
