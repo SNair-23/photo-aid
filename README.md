@@ -18,28 +18,29 @@ wget -P ./Downloads/ "https://wywu.github.io/projects/LAB/support/WFLW_annotatio
 2. Unzip them into 'Downloads/WFLW_files/datasets/'
 ~~~
 mkdir ./Downloads/WFLW_files/datasets/WFLW
-mv ./Downloads/WFLW_annotations.tar.gz ./Downloads/WFLW_Files/datasets/WFLW
-cd ./Downloads/WFLW_Files/datasets/WFLW
+mv ./Downloads/WFLW_annotations.tar.gz ./Downloads/WFLW_files/datasets/WFLW
+cd ./Downloads/WFLW_files/datasets/WFLW
 tar -xvzf WFLW_annotations.tar.gz
 ~~~
-3. Download and run annotations_parser.py, and type "R" for training. 
+3.Download the annotations_parser.py file from above and run it with:
 ~~~
-wget -P . "https://github.com/SNair-23/photo-aid/blob/main/annotations_parser.py""
-python3 annotations_parser.py
+python3 ~./Downloads/annotations_parser.py
 ~~~
-Training data should now be stored in a csv at the specified file path in the output of annotations_parser.py
+Enter "R" to obtain the WFLW training data
 
-5. Download WFLW training images WFLW Training and Testing Images from https://drive.google.com/file/d/1hzBd48JIdWTJSsATBEB_eFVvPL1bx6UC/view  --- for Google Colab, save WFLW_images.tar.gz to Google Drive, otherwise store locally or on chosen virtual environment
+5. Download WFLW Images from https://drive.google.com/file/d/1hzBd48JIdWTJSsATBEB_eFVvPL1bx6UC/view
+
 
 COLAB:
-- Training code at https://colab.research.google.com/drive/1r_dXCJkMsFt6vrwoZXCks5hQXr6LpyDq
-- Simply upload the saving_trainer.csv file into your runtime and allow for your Google Drive to be mounted when running the training.
-- The model for the executed image attribute will be saved to a .keras file within your run time after all epochs are complete.
+- Training code at https://colab.research.google.com/drive/1r_dXCJkMsFt6vrwoZXCks5hQXr6LpyDq?usp=sharing --- Create a copy to edit
+- Upload the saving_trainer.csv file into your Colab Runtime files and allow for your Google Drive to be mounted when running the training.
+- Ensure that your WFLW_images.tar.gz file from the image download is uploaded to your Google Drive
+- The model for the executed image attribute will be outputed to a .keras file within your run time after all epochs are complete.
 - Download the .keras file to save your model when satisfied with training results
 
-TEST CASES:
+TRIALS:
 - *Manipulate Epochs, Learning Rate, and Batch Size to view accuracies of different attributes*
-- Function: run_5_times(csv_data, epoch, attribute) --- Compare the speed of program in 5 runs within one runtime VS 100 epochs in one run
+- Function: run_5_times(csv_data, epoch, attribute) --- Compare the speed of program in 5 runs with 20 epochs VS 1 run of 100 epochs
 - Function: run_all_fwd_rev(csv_data, epoch) --- Ensures that order of attributes listed does not effect rate of loss
 
 # Additional Files:
