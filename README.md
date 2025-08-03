@@ -1,5 +1,5 @@
 # Photo-aid
-A deep-learning based application that recommends changes to portraits based off of the factors of blur, occlusion, make up, illumination, expression, and pose. Ideal for headshot photography. Instructions below are written for use with Google Colab for running models using their pre-existing libraries of Tensorflow, Keras, Matplotlib, Numpy, and OpenCV.
+A ongoing deep-learning based application that aims to recommend changes to portraits based off of the factors of blur, occlusion, make up, illumination, expression, and pose. Ideal for headshot photography. Instructions below are written for best use with Google Colab for running models using their pre-existing libraries of Tensorflow, Keras, Matplotlib, Numpy, and OpenCV.
 
 # Prerequisites
 - Linux OS
@@ -8,7 +8,7 @@ A deep-learning based application that recommends changes to portraits based off
 - Google Colab is highly recommended to access pre-installed libraries (Tensorflow, Keras, Matplotlib, Numpy, OpenCV, Sklearn, etc)
 
 # Model Training 
-Complete information on the WFLW dataset can be found at https://wywu.github.io/projects/LAB/WFLW.html 
+Photo-aid currently is trained with the intent of clasifying images based on 6 binary image attributes labeled in the Wider Facial Landmarks in-the-wild (WFLW) dataset. Complete information on the WFLW dataset can be found at https://wywu.github.io/projects/LAB/WFLW.html 
 
 LOADING ANNOTATIONS AND IMAGES:
 1. Download the WFLW Face Annotations
@@ -68,7 +68,7 @@ TRIALS:
    - my_imgs_tester() should now evaluate the model's performance on your annotated images when run
 
 # Running it locally (Less reliable)
-Devises with GPU and CUDE Compute Capability are recommended to accelerate training, but it can be run (slowly) on CPU.
+Devises with GPU and CUDA Compute Capability are recommended to accelerate training, but it can still be run (slowly) on CPU. 
 
 1. Create Virtual Evironment (recommended):
 ~~~
