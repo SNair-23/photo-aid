@@ -26,13 +26,8 @@ mixed_precision.set_global_policy('mixed_float16')
 from google.colab import drive
 drive.mount('/content/drive')
 
-#CONSTANTS
-tar_path = "/content/drive/MyDrive/WFLW_images.tar.gz"
-extract_path = "/content/WFLW_images"
-image_dir = "/content/WFLW_images/WFLW_images"
-
 """Extracts annotations from a .tar.gz file into a separate path"""
-def extract_tar_gz(tar_path="/content/drive/MyDrive/WFLW_images.tar.gz", extract_path="/content/WFLW_images"):
+def extract_tar_gz(tar_path, extract_path):
   import tarfile
   import os
 
@@ -45,13 +40,15 @@ def extract_tar_gz(tar_path="/content/drive/MyDrive/WFLW_images.tar.gz", extract
 
   print(f"Extracted contents to: {extract_path}")
 
-def read_csv():
-  csv_data = pd.read_csv('saving.csv')
+def read_csv(csv):
+  csv_data = pd.read_csv(csv)
+  display(csv_data)
   return csv_data
 
-
+  #Plots numbers of 0s and 1s per attribute
 def plot_csv_distribution(csv_data):
-  data = read_csv()
+  data = csv_data
+
   categories = ('blur', 'occlusion', 'make_up', 'illumination', 'expression', 'pose')
   ones = []
   zeros = []
@@ -86,11 +83,9 @@ def plot_csv_distribution(csv_data):
 
 """
 #Test cases:
-csv_data = read_csv()
+csv_data = read_csv('/content/drive/MyDrive/Colab Notebooks/saving_trainer.csv')
 plot_csv_distribution(csv_data)
 """
-
-
 
 from sklearn.utils.class_weight import compute_class_weight
 
@@ -100,11 +95,27 @@ def get_class_weights(labels):
     weights = compute_class_weight(class_weight='balanced', classes=classes, y=labels)
     return dict(zip(classes, weights))
 
-
 #print("Class weights:", get_class_weights([0, 0, 0, 0, 1, 0, 1])) # Example usage
 
+def load_images(csv_data, image_dir):
+  loaded_images = []
+  for i in range(len(csv_data)):
+    img_path = csv_data['file_name'][i] #creates a path using the folder(drive) and the filename as found in the csv
+    img_path = image_dir + "/" + img_path
+    if os.path.exists(img_path): # Check if the file exists
+      img = cv2.imread(img_path)
+      img = cv2.resize(img, (96, 96))
+      img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+      if img is not None:
+        loaded_images.append(img)
+      else:
+        print(f"Image not found: {img_path}")
+        loaded_images.append(None)
+
+  return loaded_images
+
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Input, Dense, Flatten, Dropout, DepthwiseConv2D, MaxPooling2D, Rescaling
+from tensorflow.keras.layers import Input, Dense, Flatten, Dropout, DepthwiseConv2D, MaxPooling2D
 
 model = tf.keras.Sequential([
     tf.keras.layers.Rescaling(1./255, input_shape=(96, 96, 3)),
@@ -127,27 +138,7 @@ model = tf.keras.Sequential([
 
 ])
 
-tf.keras.metrics.PrecisionAtRecall(
-  0.5, num_thresholds=200, class_id=None, name=None, dtype=None)
-
-def load_images(csv_data, image_dir="/content/WFLW_images/WFLW_images"):
-  loaded_images = []
-  for i in range(len(csv_data)):
-    img_path = csv_data['file_name'][i] #creates a path using the folder(drive) and the filename as found in the csv
-    img_path = image_dir + "/" + img_path
-    if os.path.exists(img_path): # Check if the file exists
-      img = cv2.imread(img_path)
-      img = cv2.resize(img, (96, 96))
-      img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-      if img is not None:
-        loaded_images.append(img)
-      else:
-        print(f"Image not found: {img_path}")
-        loaded_images.append(None)
-
-  return loaded_images
-
-def make_binary_NN(csv_data, attribute, epoch, image_dir="/content/WFLW_images/WFLW_images", lr=0.0028):
+def make_binary_NN(csv_data, attribute, epoch, image_dir, lr=0.0028):
     tf.keras.optimizers.Adam(learning_rate=lr)
     loaded_images = load_images(csv_data, image_dir)
     # Filter csv_data to include only rows for which images were successfully loaded
@@ -155,16 +146,16 @@ def make_binary_NN(csv_data, attribute, epoch, image_dir="/content/WFLW_images/W
     valid_indices = [i for i, img in enumerate(loaded_images) if img is not None]
     filtered_csv_data = csv_data.iloc[valid_indices].reset_index(drop=True)
 
-
+    # Convert labels to numpy array
     training_labels = filtered_csv_data[attribute].to_numpy()
-    # Convert labels to a numerical format (e.g., integers)
+    # Convert labels to int
     training_labels_numerical = training_labels.astype(int)
 
 
     # Convert the list of images to a NumPy array
     training_images_array = np.array(loaded_images)
 
-    """ Stops model too early
+    """ Stops model too early --- can be useful for reducing overfitting
     elst =  callbacks.EarlyStopping(
         monitor='val_loss',
         min_delta=0,
@@ -193,7 +184,7 @@ def make_binary_NN(csv_data, attribute, epoch, image_dir="/content/WFLW_images/W
     history=model.fit(
         training_images_array,
         training_labels_numerical,
-        batch_size=50,
+        batch_size=100,
         epochs=epoch,
         class_weight=get_class_weights(training_labels_numerical),
         validation_split=0.2,
@@ -203,7 +194,7 @@ def make_binary_NN(csv_data, attribute, epoch, image_dir="/content/WFLW_images/W
 
 from typing_extensions import runtime
 #runs and times the model on one attribute
-def run_model(csv_data, attribute, epoch, image_dir = "/content/WFLW_images/WFLW_images", lr=0.00355):
+def run_model(csv_data, image_dir, attribute, epoch, lr=0.004):
   import time
   start_time = time.time()
   history = make_binary_NN(csv_data, attribute, epoch, image_dir, lr)
@@ -212,31 +203,31 @@ def run_model(csv_data, attribute, epoch, image_dir = "/content/WFLW_images/WFLW
   return end_time - start_time, history.history['accuracy']
 
 #Runs the training on a single attribute (run_model) then plots the accuracy over epochs
-def run_and_plot(csv_data, attribute, epoch, image_dir = "/content/WFLW_images/WFLW_images", lr=0.0028):
+def run_and_plot(csv_data, image_dir, attribute, epoch, lr=0.0028):
   run_time, accuracy = run_model(csv_data, attribute, epoch, image_dir, lr)
   x_ticks = np.linspace(0, len(accuracy), len(accuracy))
   plt.plot(x_ticks, accuracy)
   plt.xlabel('Epochs')
   plt.ylabel('Accuracy')
   plt.title('Accuracy per Epoch')
-  plt.text(-10, 1.25, "Attribute: " + str(attribute) + "   Epochs: " + str(epoch) + "    Batch-size: 50    LR: " + str(lr), fontsize=11, color='black')
+  plt.text(-10, 1.25, "Attribute: " + str(attribute) + "   Epochs: " + str(epoch) + "    Batch-size: 100    LR: " + str(lr), fontsize=11, color='black')
   plt.text(-10, 1.20, "With 1 Conv2D layer between 3 DepthwiseConv2D layers", fontsize=11, color='black')
   plt.text(-10, 1.15, "Runtime (GPU): " + str(run_time) + " seconds", fontsize=11, color='black')
   plt.text(-10, 1.10, "Maximum Accuracy: " + str(max(accuracy)), fontsize=11, color='black')
 
 #Experiment --- speed of program in 5 runs within one runtime VS 100 epochs in one run
 #Displays the improvement of accuracy after each run within the same runtime
-def run_5_times(csv_data, epoch, attribute):
+def run_5_times(csv_data, image_dir, attribute, epoch):
   import time
-  run_time1, accuracy1 = run_model(csv_data, epoch, attribute)
+  run_time1, accuracy1 = run_model(csv_data, image_dir, attribute, epoch)
   time.sleep(5)
-  run_time2, accuracy2 = run_model(csv_data, epoch, attribute)
+  run_time2, accuracy2 = run_model(csv_data, image_dir, attribute, epoch)
   time.sleep(5)
-  run_time3, accuracy3 = run_model(csv_data, epoch, attribute)
+  run_time3, accuracy3 = run_model(csv_data, image_dir, attribute, epoch)
   time.sleep(5)
-  run_time4, accuracy4 = run_model(csv_data, epoch, attribute)
+  run_time4, accuracy4 = run_model(csv_data, image_dir,attribute, epoch)
   time.sleep(5)
-  run_time5, accuracy5 = run_model(csv_data, epoch, attribute, image_dir, lr=0.001)
+  run_time5, accuracy5 = run_model(csv_data, image_dir, attribute, epoch, lr=0.0017)
 
   plt.figure(figsize=(6,6))
   plt.tight_layout()
@@ -254,22 +245,22 @@ def run_5_times(csv_data, epoch, attribute):
   plt.ylabel('Accuracy')
   plt.title('Accuracy per Epoch over 5 Runs')
   plt.text(-1.5, 1.25, "Attribute: " + str(attribute) + "   Epochs: " + str(epoch) + "    Batch-size: 100    LR: 0.0028", fontsize=11, color='black')
-  plt.text(-1.5, 1.20, "The learning rate is 0.001 on run5", fontsize=11, color='black' )
+  plt.text(-1.5, 1.20, "The learning rate is 0.0017 on run5", fontsize=11, color='black' )
   plt.text(-1.5, 1.15, "With 1 Conv2D layer between 3 DepthwiseConv2D layers", fontsize=11, color='black')
   plt.text(-1.5, 1.10, "Runtime (CPU): " + str(total_run_time) + " seconds", fontsize=11, color='black')
-  plt.text(-1.5, 1.05, "Latest Accuracy: " + str(y5[-1]), fontsize=11, color='black')
+  plt.text(-1.5, 1.05, "Max Accuracy: " + str(max(y5)), fontsize=11, color='black')
   plt.show()
 
 #Test -- ensure that order of attributes listed does not effect rate of loss...
 #Runs the attributes in order of blur to pose, then pose to blur, and then plots the last accuracy of each
-def run_all_fwd_rev(csv_data, epoch):
+def run_all_fwd_rev(csv_data, image_dir, epoch):
 
   print("----------------------FORWARD--------------------------- ")
   fwd_run_times = [] # Initialize an empty list to store runtimes
   fwd_accuracies = {}
   for attribute in csv_data.columns[2:8]:
     print("Now running ", attribute)
-    x, y = run_model(csv_data, attribute, epoch, image_dir)
+    x, y = run_model(csv_data, image_dir, attribute, epoch)
     fwd_run_times.append(x) # Append the runtime to the list
     fwd_accuracies[attribute] = y[-1] # Store the last accuracy from the history
   sum1 = sum(fwd_run_times)
@@ -283,7 +274,7 @@ def run_all_fwd_rev(csv_data, epoch):
   rev_accuracies = {}
   for attribute in csv_data.columns[2:8][::-1]: # Convert to list and reverse
     print("Now running ", attribute)
-    w, z = run_model(csv_data, attribute, epoch, image_dir)
+    w, z = run_model(csv_data, image_dir, attribute, epoch, image_dir)
     rev_run_times.append(w) # Append the runtime to the list
     rev_accuracies[attribute] = z[-1] # Store the last accuracy from the history
   sum2 = sum(rev_run_times)
@@ -306,16 +297,21 @@ def run_all_fwd_rev(csv_data, epoch):
   plt.text(1,1.2,"Batch-size: 100", fontsize=12, color='red')
   plt.text(3,1.2,"Learning-rate: 0.0028", fontsize=12, color='green')
   plt. text(-1, 1.15, "Using 2D Depthwise Convolutions", fontsize=12, color='black')
-  plt. text(-1, 1.10, "Runtime (CPU): " + str(sum1) + " seconds", fontsize=10, color='black')
+  plt. text(-1, 1.10, "Runtime (GPU): " + str(sum1) + " seconds", fontsize=10, color='black')
 
   plt.show()
 
 def main():
+  #CONSTANTS
+  tar_path = "/content/drive/MyDrive/WFLW_images.tar.gz" #must be a zipped tar.gz file
+  extract_path = "/content/WFLW_images" #path to unzip the images
+  image_dir = "/content/WFLW_images/WFLW_images" #path to directory containing images- within extract_path
+  csv_data = read_csv("/content/drive/MyDrive/Colab Notebooks/saving_trainer.csv") #path to saving_trainer.csv (output from annotations_parser.py)
+
   extract_tar_gz(tar_path, extract_path)
-  csv_data = read_csv()
-  run_and_plot(csv_data, 'occlusion', epoch=100, lr=0.0032585)
-  #run_5_times(csv_data, 'pose')
-  #run_all_fwd_rev(csv_data)
+  #run_and_plot(csv_data, image_dir, 'blur', epoch=100, lr=0.0028)
+  run_5_times(csv_data, image_dir, 'blur', 20)
+  #run_all_fwd_rev(csv_data, image_dir, 15)
 
 if __name__ == "__main__":
     main()
