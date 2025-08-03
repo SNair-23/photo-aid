@@ -67,3 +67,29 @@ TRIALS:
    - In function main() of the tester code, change the illumination_csv_data constant to the absolute path of your csv
    - my_imgs_tester() should now evaluate the model's performance on your annotated images when run
 
+# Paper
+To compile the paper, clone the repository (if you haven't already) with:
+~~~
+git clone git@github.com:SNair-23/photo-aid.git
+~~~
+Then run the following commands:
+~~~
+cd photo-aid/ShriyaNair_PortraitOptimizationviaDeepLearning/
+pdflatex main.tex
+biber main
+pdflatex main.tex
+pdflatex main.tex
+~~~
+Open a pdf version of the paper using:
+~~~
+xdg-open main.pdf
+~~~
+
+
+
+
+
+
+
+
+#
