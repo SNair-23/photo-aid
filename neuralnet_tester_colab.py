@@ -23,6 +23,7 @@ from sklearn.utils import class_weight
 from keras import mixed_precision
 mixed_precision.set_global_policy('mixed_float16')
 
+###Can be removed if not using colab
 from google.colab import drive
 drive.mount('/content/drive')
 
@@ -75,9 +76,9 @@ def load_images2(csv_data,  image_dir):
       print("file " + img_path + " doesnt exist")
   return loaded_images
 
-def WFLW_tester(tar_path, extract_path, image_dir):
+def WFLW_tester(tar_path, extract_path, image_dir, csv_path):
   extract_tar_gz(tar_path, extract_path)
-  csv_data = pd.read_csv("saving_tester.csv")
+  csv_data = pd.read_csv(csv_path)
   print("There are", len(csv_data), "WFLW testing annotations.")
   loaded_images = load_images(csv_data, image_dir)
   print("Loaded all", len(loaded_images), "testing images.")
@@ -136,21 +137,23 @@ def my_imgs_tester(illumination_csv_data, image_dir2, model_path):
   print("illumination accuracy on my images:", eval_result[1])
 
 def main():
-  ###CONSTANTS### --- Manipulate according to your filepaths
-  tar_path = "/content/drive/MyDrive/WFLW_images.tar.gz"
-  extract_path = "/content/WFLW_images"
-  image_dir = "/content/WFLW_images/WFLW_images"
-  model_path = "/content/drive/MyDrive/Colab Notebooks/models/"
 
-  illumination_csv_data = pd.read_csv("/content/drive/MyDrive/image-lightings.csv")
-  image_dir2 = '/content/drive/MyDrive/all-images'
+  ###CONSTANTS### --- Manipulate according to your filepaths
+  tar_path = "/content/drive/MyDrive/WFLW_images.tar.gz" #must be a zipped tar.gz file
+  extract_path = "/content/WFLW_images" #path to unzip the images
+  image_dir = "/content/WFLW_images/WFLW_images" #path to directory containing images- within extract_path
+  csv_path = "/content/drive/MyDrive/Colab Notebooks/saving_tester.csv" #path to saving_tester.csv (output from annotations_parser.py)
+  model_path = "/content/drive/MyDrive/Colab Notebooks/models/" #path to trained models
+
+  illumination_csv_data = pd.read_csv("/content/drive/MyDrive/image-lightings.csv") #csv file of own images (output from image-lighting-calc.py)
+  image_dir2 = '/content/drive/MyDrive/all-images'#directory containing own images that image-lighting-calc.py computed illumination values of
 
   ###MAIN###
-  csv_data, loaded_images = WFLW_tester(tar_path, extract_path, image_dir)
+  csv_data, loaded_images = WFLW_tester(tar_path, extract_path, image_dir, csv_path)
   test_all(model_path, csv_data, loaded_images)
   import time
   time.sleep(10)
-  my_imgs_tester(illumination_csv_data, image_dir2, model_path)
+  #my_imgs_tester(illumination_csv_data, image_dir2, model_path)
 
 
 if __name__ == "__main__":
