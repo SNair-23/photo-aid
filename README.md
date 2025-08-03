@@ -7,7 +7,7 @@ A ongoing deep-learning based application that aims to recommend changes to port
 - Pandas Library (Local- to run annotations_parser.py)
 - Google Colab is highly recommended to access pre-installed libraries (Tensorflow, Keras, Matplotlib, Numpy, OpenCV, Sklearn, etc)
 
-# Model Training 
+# Loading Data
 Photo-aid currently is trained with the intent of clasifying images based on 6 binary image attributes labeled in the Wider Facial Landmarks in-the-wild (WFLW) dataset. Complete information on the WFLW dataset can be found at https://wywu.github.io/projects/LAB/WFLW.html 
 
 LOADING ANNOTATIONS AND IMAGES:
@@ -30,7 +30,7 @@ Enter "R" to obtain the WFLW training data
 
 5. Download WFLW Images from https://drive.google.com/file/d/1hzBd48JIdWTJSsATBEB_eFVvPL1bx6UC/view
    
-
+# Model Training 
 IF USING GOOGLE COLAB (No need to install necessary packages, and free limited access to GPU acceleration):
 - Training code at https://colab.research.google.com/drive/1r_dXCJkMsFt6vrwoZXCks5hQXr6LpyDq?usp=sharing --- Create a copy to edit
 - CONSTANTS: tar_path, extract_path, image_dir, and csv_path are constants in the main() function of the NeuralNet_Tester_Colab.py program. --- Please ensure to manipulate them according to your file locations in drive.
@@ -46,9 +46,6 @@ TRIALS:
 *Create a copy of https://colab.research.google.com/drive/1ErgGkizOYxa2sGaNvckm0tb2Bksu7fZm?usp=sharing to manipulate and run the testing code
 
 *CONSTANTS: tar_path, extract_path, image_dir, model_path, illumination_csv_data, and image_dir2 are constants in the main() function of the NeuralNet_Tester_Colab.py program. Please ensure to manipulate them according to your file locations in drive. 
-
-  illumination_csv_data = pd.read_csv("/content/drive/MyDrive/image-lightings.csv")
-  image_dir2 = '/content/drive/MyDrive/all-images'
   
 1. Model Can be tested on WFLW Testing data. Again run:
    ~~~
@@ -87,7 +84,7 @@ pip install scikit-learn
 ~~~
 git clone git@github.com:SNair-23/photo-aid.git
 ~~~
-4. EDITS:
+4. EDITS TO FILES:
   - wflw_nn_trainer_colab.py & neuralnet_tester_colab.py: Comment out lines importing google colab and mounting google drive. Change constants in main() to match absolute paths to the files stored in your local directory.
   - image_lighting_calc.py: Comment out lines importing google colab and mounting google drive. Change image_folder to the absolute path to your local folder of images that you want to script. 
   - make sure to keep track of file locations created in image_lighting_calc.py(image-lightings.csv) and wflw_nn_trainer_colab.py(.keras models) to parse into neuralnet_tester_colab.py.
