@@ -33,8 +33,7 @@ Enter "R" to obtain the WFLW training data
 
 IF USING GOOGLE COLAB (No need to install necessary packages, and free limited access to GPU acceleration):
 - Training code at https://colab.research.google.com/drive/1r_dXCJkMsFt6vrwoZXCks5hQXr6LpyDq?usp=sharing --- Create a copy to edit
-- Upload the saving_trainer.csv file into your Colab Runtime files and allow for your Google Drive to be mounted when running the training.
-- Ensure that your WFLW_images.tar.gz file from the image download is uploaded to your Google Drive
+- CONSTANTS: tar_path, extract_path, image_dir, and csv_path are constants in the main() function of the NeuralNet_Tester_Colab.py program. --- Please ensure to manipulate them according to your file locations in drive.
 - The model for the executed image attribute will be outputed to a .keras file within your run time after all epochs are complete.
 - Download the .keras file to save your model when satisfied with training results
 
@@ -45,6 +44,7 @@ TRIALS:
 
 # Model Testing
 *Create a copy of https://colab.research.google.com/drive/1ErgGkizOYxa2sGaNvckm0tb2Bksu7fZm?usp=sharing to manipulate and run the testing code
+
 *CONSTANTS: tar_path, extract_path, image_dir, model_path, illumination_csv_data, and image_dir2 are constants in the main() function of the NeuralNet_Tester_Colab.py program. Please ensure to manipulate them according to your file locations in drive. 
 
   illumination_csv_data = pd.read_csv("/content/drive/MyDrive/image-lightings.csv")
