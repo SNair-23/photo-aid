@@ -29,10 +29,9 @@ python3 ~./Downloads/annotations_parser.py
 Enter "R" to obtain the WFLW training data
 
 5. Download WFLW Images from https://drive.google.com/file/d/1hzBd48JIdWTJSsATBEB_eFVvPL1bx6UC/view
+   
 
-*The script used for training can be found as wflw_nn_trainer_colab.py in this repo. Keep in mind that filepaths and package installations may have to be manipulated as this script was written in Google Colab for computational speed purposes.*
-
-IF USING GOOGLE COLAB:
+IF USING GOOGLE COLAB (No need to install necessary packages, and free limited access to GPU acceleration):
 - Training code at https://colab.research.google.com/drive/1r_dXCJkMsFt6vrwoZXCks5hQXr6LpyDq?usp=sharing --- Create a copy to edit
 - Upload the saving_trainer.csv file into your Colab Runtime files and allow for your Google Drive to be mounted when running the training.
 - Ensure that your WFLW_images.tar.gz file from the image download is uploaded to your Google Drive
